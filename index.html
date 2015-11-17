@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <title>passe trappe gen</title>
+    <link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
+    <style>
+        html {
+            box-sizing: border-box;
+        }
+        
+        *,
+        *:before,
+        *:after {
+            box-sizing: inherit;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Roboto', sans-serif;
+            overflow-x: hidden;
+            font-size: 15px;
+        }
+        
+        h1 {
+            margin-bottom: 20px;
+        }
+        
+        .sidebar {
+            width: 220px;
+            background: blue;
+            color: white;
+            padding: 30px 20px 20px 20px;
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+        }
+        
+        .form_item:first-child {
+            border-top: 1px solid #bbb;
+        }
+        
+        .form_item {
+            border-bottom: 1px solid #bbb;
+            line-height: 1.5em;
+            overflow: auto;
+        }
+        
+        label {
+            display: inline-block;
+            text-align: left;
+        }
+        
+        input {
+            display: block;
+            float: right;
+            width: 50px;
+            text-align: center;
+            border: 0;
+            padding: 3px;
+            color: blue;
+            height: 25px;
+        }
+        
+        svg {
+            display: block;
+            max-width: 80%;
+            height: auto;
+            margin-top: 20px;
+            margin-left: 200px;
+        }
+        
+        p {
+            margin-top: .5em;
+        }
+        
+        .button {
+            margin-top: 20px;
+            padding: 5px 7px;
+            border-radius: 3px;
+            background: #fff;
+            border: 1px solid #999;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="sidebar">
+        <h1>psstrppgnrtr</h1>
+        <form>
+            <div class="form_item">
+                <label>épaisseur du bois</label>
+                <input name="bois" id="bois" type="number" value="7" max="999" min="1" step="1">
+            </div>
+            <div class="form_item">
+                <label>Longueur*</label>
+                <input id="longueur" type="number" value="57" max="999" min="7" step="2">
+
+            </div>
+            <div class="form_item">
+                <label>largeur*</label>
+                <input name="largeur" id="largeur" type="number" value="33" max="999" min="13" step="4">
+
+            </div>
+            <div class="form_item">
+                <label>hauteur*</label>
+                <input id="hauteur" type="number" value="5" max="999" min="3" step="2">
+            </div>
+            <div class="form_item">
+                <label>largeur du but*</label>
+                <input id="fente" type="number" value="5" max="999" min="1" step="4">
+            </div>
+        </form>
+        <p>* toutes les dimensions sont en épaisseur de bois</p>
+        <p>dimension finale L×l×h <span id="dim"></span></p>
+        <button class="button">télécharger .svg</button>
+    </div>
+    <svg id="passe-trappe" version="1.1" xmlns="http://www.w3.org/2000/svg">
+
+
+    </svg>
+    </g>
+    <script>
+        function val(id) {
+            return parseInt(document.getElementById(id).value);
+        }
+        var bois = val("bois"), // 7 
+            l = bois * val("largeur"), //57
+            h = bois * (val("hauteur") + 2), // 7
+            L = bois * val("longueur"), // 33
+            fente = bois * val("fente"), //
+            dim = L + "×" + l + "×" + h + "mm",
+            trou = 30,
+            diam = 2.4,
+            pi = Math.PI;
+
+
+        function draw() {
+            document.getElementById("passe-trappe").innerHTML = '<g><polygon id="top" stroke="green" fill="none" points="" /></g>';
+            document.getElementById("passe-trappe").innerHTML += '<g><polygon id="bottom" stroke="blue" fill="none" points="" /></g>';
+            document.getElementById("passe-trappe").innerHTML += '<g><polygon  id="fond" stroke="red"  fill="none" points="" /></g>';
+            document.getElementById("passe-trappe").innerHTML += '<g><polygon id="right" stroke="orange" fill="none" points="" />';
+            document.getElementById("passe-trappe").innerHTML += '<g><polygon  id="left" stroke="red"  fill="none" points="" /></g>';
+            document.getElementById("passe-trappe").innerHTML += '<g><polygon  id="but" stroke="green"  fill="none" points="" /></g>';
+            document.getElementById("passe-trappe").innerHTML += '<g><g id="jeton"></g></g>';
+
+
+            bois = val("bois"), // 7 
+                l = bois * val("largeur"), //57
+                h = bois * (val("hauteur") + 2), // 7
+                L = bois * val("longueur"), // 33
+                fente = bois * val("fente"), //
+                dim = L + "×" + l + "×" + h + "mm",
+                trou = 30,
+                diam = 2.4,
+                pi = Math.PI;
+
+            document.getElementById("dim").innerHTML = dim;
+
+
+            function val(id) {
+                return parseInt(document.getElementById(id).value);
+            }
+
+            function translatepolygon(x, y, who) {
+                for (var i = 0; i < who.points.length; i++) {
+                    who.points[i].x += x;
+                    who.points[i].y += y;
+                }
+            }
+
+            function translaterect(x, y, who) {
+                var e = document.querySelectorAll(who);
+                Array.prototype.forEach.call(e, function (el, i) {
+                    el.setAttribute('x', parseInt(el.getAttribute('x')) + x);
+                    el.setAttribute('y', parseInt(el.getAttribute('y')) + y);
+                });
+            }
+
+            function translatecircle(x, y, who) {
+                var e = document.querySelectorAll(who);
+                Array.prototype.forEach.call(e, function (el, i) {
+                    el.setAttribute('cx', parseInt(el.getAttribute('cx')) + x);
+                    el.setAttribute('cy', parseInt(el.getAttribute('cy')) + y);
+                });
+            }
+
+            function dist(xa, ya, xb, yb) {
+                return Math.sqrt((xb - xa) * (xb - xa) + (yb - ya) * (yb - ya));
+            }
+
+            function zig(xa, ya, xb, yb, bois, alpha, offset) {
+                z = " ";
+                var d = dist(xa, ya, xb, yb);
+                for (i = 0; i < d / bois; i += 1) {
+                    cos = (Math.cos(alpha));
+                    sin = -(Math.sin(alpha));
+
+                    if ((i + offset) % 2) {
+                        z += (xa + bois * i * cos) + "," + (ya + bois * i * sin) + " ";
+                        z += (xa + bois * (i + 1) * cos) + "," + (ya + bois * (i + 1) * sin) + " ";
+                    } else {
+                        z += (xa + bois * i * cos - sin * bois) + "," + (ya + bois * i * sin + cos * bois) + " ";
+                        z += (xa + bois * (i + 1) * cos - sin * bois) + "," + (ya + bois * (i + 1) * sin + cos * bois) + " ";
+                    }
+                }
+                return z;
+            }
+
+            function rect(x, y, w, h, c) {
+                var svgns = "http://www.w3.org/2000/svg";
+                var rect = document.createElementNS(svgns, 'rect');
+                var g = type1.querySelector('#' + c);
+                g = g.parentNode;
+                rect.setAttributeNS(null, 'class', c);
+                rect.setAttributeNS(null, 'x', x);
+                rect.setAttributeNS(null, 'y', y);
+                rect.setAttributeNS(null, 'height', h);
+                rect.setAttributeNS(null, 'width', w);
+                rect.setAttributeNS(null, 'fill', "none");
+                rect.setAttributeNS(null, 'stroke', "green");
+                g.appendChild(rect);
+            }
+
+            function circle(cx, cy, r, c) {
+                var svgns = "http://www.w3.org/2000/svg";
+                var circle = document.createElementNS(svgns, 'circle');
+                var g = type1.querySelector('#' + c);
+                g = g.parentNode;
+                circle.setAttributeNS(null, 'class', c);
+                circle.setAttributeNS(null, 'cx', cx);
+                circle.setAttributeNS(null, 'cy', cy);
+                circle.setAttributeNS(null, 'r', r);
+                circle.setAttributeNS(null, 'fill', "none");
+                circle.setAttributeNS(null, 'stroke', "green");
+                g.appendChild(circle);
+            }
+            /* SVG */
+            var type1 = document.querySelector('svg');
+            type1.setAttribute('width', (L + 4 * h + 5 * bois) + "");
+            type1.setAttribute('height', (l + 3 * h + 5 * bois) + "");
+
+            type1.setAttribute('viewPort', '0 0 ' + (L + 4 * h + 5 * bois) + ' ' + (l + 3 * h + 5 * bois));
+
+
+            /* #top */
+            var points = "0," + bois + " " + L + "," + bois + " "; // + (l - bois) + ",0 ";
+
+            points += zig(L, bois, L, h, bois, -pi / 2, 1);
+            points += zig(L - bois, h, 0, h, bois, pi, 1);
+            points += zig(0, h - bois, 0, bois, bois, pi / 2, 1);
+
+
+
+            type1.querySelector('#top').setAttribute('points', points);
+            for (var i = 2; i < (h - bois) / bois; i += 2) {
+                rect(L / 2 - bois / 2, bois * i, bois, bois, "top");
+            }
+
+            circle(trou, h - 1.8 * bois, diam / 2, "top");
+            circle(L - trou, h - 1.8 * bois, diam / 2, "top");
+            translatepolygon(h, 0, type1.querySelector('#top'));
+            translaterect(h, 0, 'rect.top');
+            translatecircle(h, 0, 'circle.top');
+
+
+            /* #bottom */
+
+            var points = "0," + bois + " " + L + "," + bois + " "; // + (l - bois) + ",0 ";
+
+            points += zig(L, bois, L, h, bois, -pi / 2, 1);
+            points += zig(L - bois, h, 0, h, bois, pi, 1);
+            points += zig(0, h - bois, 0, bois, bois, pi / 2, 1);
+
+            type1.querySelector('#bottom').setAttribute('points', points);
+            for (var i = 2; i < (h - bois) / bois; i += 2) {
+                rect(L / 2 - bois / 2, bois * i, bois, bois, "bottom");
+            }
+
+            circle(trou, h - 1.8 * bois, diam / 2, "bottom");
+            circle(L - trou, h - 1.8 * bois, diam / 2, "bottom");
+            translatepolygon(h, h + l + 3 * bois, type1.querySelector('#bottom'));
+            translaterect(h, h + l + 3 * bois, 'rect.bottom');
+            translatecircle(h, h + l + 3 * bois, 'circle.bottom');
+
+
+            /* #fond */
+            points = zig(0, 0 - bois, L - bois, 0, bois, 0, 1);
+            points += (L) + "," + (bois) + " ";
+            points += zig(L, bois, L, l, bois, -pi / 2, 0);
+            points += (L) + "," + (l + bois) + " ";
+            points += zig(L, l + bois, 0, l + bois, bois, pi, 1);
+            points += zig(0, l, 0, 0, bois, pi / 2, 1);
+
+            type1.querySelector('#fond').setAttribute('points', points);
+
+            for (var i = 0; i < (l - fente) / bois / 2 - 2; i += 2) {
+                rect(L / 2 - bois / 2, l / 2 - (fente / 2 / bois + i + 3) * bois, bois, bois, "fond");
+                rect(L / 2 - bois / 2, l / 2 + (fente / 2 / bois + i + 2) * bois, bois, bois, "fond");
+            }
+
+            translatepolygon(h, h + 2 * bois, type1.querySelector('#fond'));
+            translaterect(h, h + 2 * bois, '.fond');
+
+            /* #right */
+            points = zig(0, -bois, h - 2 * bois, -bois, bois, 0, 0);
+            points += (h - 2 * bois) + "," + (l) + " ";
+            points += zig(+h - 2 * bois, l + bois, 0, l + bois, bois, -pi, 0);
+            points += zig(-bois, l, -bois, 0, bois, pi / 2, 0);
+
+            type1.querySelector('#right').setAttribute('points', points);
+
+            translatepolygon(L + h + 3 * bois, h, type1.querySelector('#right'));
+
+            /* #left */
+            points = zig(0, -bois, h - 2 * bois, -bois, bois, 0, 0);
+            points += (h - 2 * bois) + "," + (l) + " ";
+            points += zig(+h - 2 * bois, l + bois, 0, l + bois, bois, -pi, 0);
+            points += zig(-bois, l, -bois, 0, bois, pi / 2, 0);
+
+            type1.querySelector('#left').setAttribute('points', points);
+
+            translatepolygon(L + 2 * h + 3 * bois, h, type1.querySelector('#left'));
+
+            /* #but */
+            points = zig(0, -bois, h - 2 * bois, -bois, bois, 0, 0);
+            points += (h - 2 * bois) + "," + (l) + " ";
+            points += zig(+h - 2 * bois, l + bois, 0, l + bois, bois, -pi, 0);
+            points += zig(-bois, l, -bois, l / 2 + fente / 2 + bois, bois, pi / 2, 0);
+            points += 2 * bois + "," + (l / 2 + fente / 2) + " ";
+            points += 2 * bois + "," + (l / 2 - fente / 2) + " ";
+            points += zig(-bois, l / 2 - fente / 2 - bois, bois, bois, bois, pi / 2, 0);
+
+            type1.querySelector('#but').setAttribute('points', points);
+
+            translaterect(L + 3 * h + 3 * bois, h, '.but');
+            translatepolygon(L + 3 * h + 3 * bois, h, type1.querySelector('#but'));
+
+            for (var i = 0; i < 10; i++) {
+                circle(i * (bois * 4) + bois * 2 + h, h * 2 + l + bois * 6, bois * 3 / 2, "jeton");
+            }
+        };
+
+        draw();
+
+        window.addEventListener('input', function (e) {
+            draw();
+        }, false);
+
+        document.querySelector('button').addEventListener('click', function (e) {
+            var type1 = document.querySelector('svg');
+            type1.setAttribute('width', (L + 4 * h + 5 * bois) + "mm");
+            type1.setAttribute('height', (l + 3 * h + 5 * bois) + "mm");
+            type1.setAttribute('viewBox', '0 0 ' + (L + 4 * h + 5 * bois) + ' ' + (l + 3 * h + 5 * bois));
+
+            saveAs(new Blob([document.getElementById("passe-trappe").outerHTML], {
+                type: "application/svg+xml"
+            }), "pss-trp.svg")
+        }, false);
+
+        /*! @source http://purl.eligrey.com/github/FileSaver.js/blob/master/FileSaver.js */
+
+        var saveAs = saveAs || function (e) {
+            "use strict";
+            if (typeof navigator !== "undefined" && /MSIE [1-9]\./.test(navigator.userAgent)) {
+                return
+            }
+            var t = e.document,
+                n = function () {
+                    return e.URL || e.webkitURL || e
+                },
+                r = t.createElementNS("http://www.w3.org/1999/xhtml", "a"),
+                i = "download" in r,
+                o = function (e) {
+                    var t = new MouseEvent("click");
+                    e.dispatchEvent(t)
+                },
+                a = /Version\/[\d\.]+.*Safari/.test(navigator.userAgent),
+                f = e.webkitRequestFileSystem,
+                u = e.requestFileSystem || f || e.mozRequestFileSystem,
+                s = function (t) {
+                    (e.setImmediate || e.setTimeout)(function () {
+                        throw t
+                    }, 0)
+                },
+                c = "application/octet-stream",
+                d = 0,
+                l = 500,
+                w = function (t) {
+                    var r = function () {
+                        if (typeof t === "string") {
+                            n().revokeObjectURL(t)
+                        } else {
+                            t.remove()
+                        }
+                    };
+                    if (e.chrome) {
+                        r()
+                    } else {
+                        setTimeout(r, l)
+                    }
+                },
+                p = function (e, t, n) {
+                    t = [].concat(t);
+                    var r = t.length;
+                    while (r--) {
+                        var i = e["on" + t[r]];
+                        if (typeof i === "function") {
+                            try {
+                                i.call(e, n || e)
+                            } catch (o) {
+                                s(o)
+                            }
+                        }
+                    }
+                },
+                v = function (e) {
+                    if (/^\s*(?:text\/\S*|application\/xml|\S*\/\S*\+xml)\s*;.*charset\s*=\s*utf-8/i.test(e.type)) {
+                        return new Blob(["\ufeff", e], {
+                            type: e.type
+                        })
+                    }
+                    return e
+                },
+                y = function (t, s, l) {
+                    if (!l) {
+                        t = v(t)
+                    }
+                    var y = this,
+                        m = t.type,
+                        S = false,
+                        h, R, O = function () {
+                            p(y, "writestart progress write writeend".split(" "))
+                        },
+                        g = function () {
+                            if (R && a && typeof FileReader !== "undefined") {
+                                var r = new FileReader;
+                                r.onloadend = function () {
+                                    var e = r.result;
+                                    R.location.href = "data:attachment/file" + e.slice(e.search(/[,;]/));
+                                    y.readyState = y.DONE;
+                                    O()
+                                };
+                                r.readAsDataURL(t);
+                                y.readyState = y.INIT;
+                                return
+                            }
+                            if (S || !h) {
+                                h = n().createObjectURL(t)
+                            }
+                            if (R) {
+                                R.location.href = h
+                            } else {
+                                var i = e.open(h, "_blank");
+                                if (i == undefined && a) {
+                                    e.location.href = h
+                                }
+                            }
+                            y.readyState = y.DONE;
+                            O();
+                            w(h)
+                        },
+                        b = function (e) {
+                            return function () {
+                                if (y.readyState !== y.DONE) {
+                                    return e.apply(this, arguments)
+                                }
+                            }
+                        },
+                        E = {
+                            create: true,
+                            exclusive: false
+                        },
+                        N;
+                    y.readyState = y.INIT;
+                    if (!s) {
+                        s = "download"
+                    }
+                    if (i) {
+                        h = n().createObjectURL(t);
+                        r.href = h;
+                        r.download = s;
+                        setTimeout(function () {
+                            o(r);
+                            O();
+                            w(h);
+                            y.readyState = y.DONE
+                        });
+                        return
+                    }
+                    if (e.chrome && m && m !== c) {
+                        N = t.slice || t.webkitSlice;
+                        t = N.call(t, 0, t.size, c);
+                        S = true
+                    }
+                    if (f && s !== "download") {
+                        s += ".download"
+                    }
+                    if (m === c || f) {
+                        R = e
+                    }
+                    if (!u) {
+                        g();
+                        return
+                    }
+                    d += t.size;
+                    u(e.TEMPORARY, d, b(function (e) {
+                        e.root.getDirectory("saved", E, b(function (e) {
+                            var n = function () {
+                                e.getFile(s, E, b(function (e) {
+                                    e.createWriter(b(function (n) {
+                                        n.onwriteend = function (t) {
+                                            R.location.href = e.toURL();
+                                            y.readyState = y.DONE;
+                                            p(y, "writeend", t);
+                                            w(e)
+                                        };
+                                        n.onerror = function () {
+                                            var e = n.error;
+                                            if (e.code !== e.ABORT_ERR) {
+                                                g()
+                                            }
+                                        };
+                                        "writestart progress write abort".split(" ").forEach(function (e) {
+                                            n["on" + e] = y["on" + e]
+                                        });
+                                        n.write(t);
+                                        y.abort = function () {
+                                            n.abort();
+                                            y.readyState = y.DONE
+                                        };
+                                        y.readyState = y.WRITING
+                                    }), g)
+                                }), g)
+                            };
+                            e.getFile(s, {
+                                create: false
+                            }, b(function (e) {
+                                e.remove();
+                                n()
+                            }), b(function (e) {
+                                if (e.code === e.NOT_FOUND_ERR) {
+                                    n()
+                                } else {
+                                    g()
+                                }
+                            }))
+                        }), g)
+                    }), g)
+                },
+                m = y.prototype,
+                S = function (e, t, n) {
+                    return new y(e, t, n)
+                };
+            if (typeof navigator !== "undefined" && navigator.msSaveOrOpenBlob) {
+                return function (e, t, n) {
+                    if (!n) {
+                        e = v(e)
+                    }
+                    return navigator.msSaveOrOpenBlob(e, t || "download")
+                }
+            }
+            m.abort = function () {
+                var e = this;
+                e.readyState = e.DONE;
+                p(e, "abort")
+            };
+            m.readyState = m.INIT = 0;
+            m.WRITING = 1;
+            m.DONE = 2;
+            m.error = m.onwritestart = m.onprogress = m.onwrite = m.onabort = m.onerror = m.onwriteend = null;
+            return S
+        }(typeof self !== "undefined" && self || typeof window !== "undefined" && window || this.content);
+        if (typeof module !== "undefined" && module.exports) {
+            module.exports.saveAs = saveAs
+        } else if (typeof define !== "undefined" && define !== null && define.amd != null) {
+            define([], function () {
+                return saveAs
+            })
+        }
+    </script>
+
+
+</body>
+
+</html>
