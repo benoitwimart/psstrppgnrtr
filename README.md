@@ -4,9 +4,10 @@ generate passe-trappe path in svg for laser-cut
 A simple page made with js to generate files in SVG (run in Chrome)
 Demo at http://jenseign.com/psstrppgnrtr
 
-##FR
+## FR
 Un générateur de fichier SVG pour découpe laser permettant de constuire un passe-trappe.
-
-made at http://lamachinerie.org
-export js :
-/*! @source http://purl.eligrey.com/github/FileSaver.js/blob/master/FileSaver.js */
+![alt tag](https://raw.githubusercontent.com/benoitwimart/psstrppgnrtr/master/psstrppgnrtr.jpg)
+## Crédits & merci 
+- made at http://lamachinerie.org
+- export js :
+http://purl.eligrey.com/github/FileSaver.js/blob/master/FileSaver.js 
