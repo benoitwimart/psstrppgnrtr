@@ -6,3 +6,7 @@ Demo at http://jenseign.com/psstrppgnrtr
 
 ##FR
 Un générateur de fichier SVG pour découpe laser permettant de constuire un passe-trappe.
+
+made at http://lamachinerie.org
+export js :
+/*! @source http://purl.eligrey.com/github/FileSaver.js/blob/master/FileSaver.js */
