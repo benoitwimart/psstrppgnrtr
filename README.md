@@ -9,5 +9,5 @@ Un générateur de fichier SVG pour découpe laser permettant de constuire un pa
 ![alt tag](https://raw.githubusercontent.com/benoitwimart/psstrppgnrtr/master/psstrppgnrtr.jpg)
 ## Crédits & merci 
 - made at http://lamachinerie.org
-- export js :
+- file saver js :
 http://purl.eligrey.com/github/FileSaver.js/blob/master/FileSaver.js 
